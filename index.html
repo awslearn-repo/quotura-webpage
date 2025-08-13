@@ -26,7 +26,7 @@
         <nav class="site-nav">
           <a href="#features">Features</a>
           <a href="#how">How it works</a>
-          <a href="#reviews">Reviews</a>
+          <a href="#feedback">Feedback</a>
           <a href="#faq">FAQ</a>
           <a class="button button--primary button--sm" href="https://chromewebstore.google.com/detail/mlkcccmkkcdhalkjnlabofccobpdjbio?utm_source=website" rel="noopener" target="_blank">Add to Chrome</a>
         </nav>
@@ -143,28 +143,62 @@
         </div>
       </section>
 
-      <section id="reviews" class="section">
+      <section id="feedback" class="section">
         <div class="container">
-          <h2>Loved by readers and creators</h2>
-          <div class="testimonials">
-            <figure class="testimonial">
-              <div class="rating" aria-label="5 out of 5 stars">★★★★★</div>
-              <blockquote>Quotura made it effortless to share quotes from articles I read daily. The templates look professional out of the box.</blockquote>
-              <figcaption>— Maya, Content Marketer</figcaption>
-            </figure>
-            <figure class="testimonial">
-              <div class="rating" aria-label="5 out of 5 stars">★★★★★</div>
-              <blockquote>Perfect for lecture notes and research highlights. I can format and save visuals for my slides in seconds.</blockquote>
-              <figcaption>— Theo, Student</figcaption>
-            </figure>
-            <figure class="testimonial">
-              <div class="rating" aria-label="5 out of 5 stars">★★★★★</div>
-              <blockquote>My team uses it to share insights on social. Custom branding keeps everything on‑brand with no design work.</blockquote>
-              <figcaption>— Nora, Social Lead</figcaption>
-            </figure>
-          </div>
+          <h2>Feedback and feature requests</h2>
+          <p class="lead">Tell us what you’d like to see next. Bug reports, ideas, and feature requests are welcome.</p>
+          <form class="feedback" id="feedback-form">
+            <div class="field">
+              <label for="fb-name">Name</label>
+              <input id="fb-name" name="name" type="text" placeholder="Your name (optional)">
+            </div>
+            <div class="field">
+              <label for="fb-email">Email</label>
+              <input id="fb-email" name="email" type="email" placeholder="you@example.com">
+            </div>
+            <div class="field">
+              <label for="fb-type">Type</label>
+              <select id="fb-type" name="type">
+                <option value="Feedback">Feedback</option>
+                <option value="Feature Request">Feature Request</option>
+                <option value="Bug Report">Bug Report</option>
+              </select>
+            </div>
+            <div class="field field--full">
+              <label for="fb-message">Message</label>
+              <textarea id="fb-message" name="message" rows="5" placeholder="Share details so we can help or build it right..."></textarea>
+            </div>
+            <div class="actions">
+              <button type="submit" class="button button--primary">Send via Email</button>
+              <a id="mailto-fallback" class="button button--ghost" href="mailto:myquest.ai@gmail.com?subject=Quotura%20Feedback" rel="noopener">Open mail app</a>
+            </div>
+          </form>
         </div>
       </section>
+
+      <script>
+      (function(){
+        var form = document.getElementById('feedback-form');
+        if(!form) return;
+        form.addEventListener('submit', function(e){
+          e.preventDefault();
+          var name = document.getElementById('fb-name').value.trim();
+          var email = document.getElementById('fb-email').value.trim();
+          var type = document.getElementById('fb-type').value;
+          var message = document.getElementById('fb-message').value.trim();
+
+          var subject = encodeURIComponent('Quotura ' + type);
+          var bodyParts = [];
+          if(message) bodyParts.push(message);
+          if(name) bodyParts.push('\n\nFrom: ' + name);
+          if(email) bodyParts.push('Email: ' + email);
+          var body = encodeURIComponent(bodyParts.join('\n'));
+
+          var mailto = 'mailto:myquest.ai@gmail.com?subject=' + subject + '&body=' + body;
+          window.location.href = mailto;
+        });
+      })();
+      </script>
 
       <section class="cta section alt">
         <div class="container center">
