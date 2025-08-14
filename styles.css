@@ -222,6 +222,7 @@ p { margin: 0.5rem 0 0 0; color: var(--muted); }
 .cta-row { display: flex; gap: 1rem; margin-top: 1.25rem; flex-wrap: wrap; }
 
 .hero-visual { display: grid; place-items: center; }
+.hero-logo { width: min(70vw, 420px); height: auto; filter: drop-shadow(0 10px 30px rgba(15, 23, 42, 0.15)); }
 
 .quote-card {
   width: 100%;
@@ -390,7 +391,7 @@ input:focus, select:focus, textarea:focus {
 .feature:hover, .step:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08); border-color: #dbeafe; }
 
 @keyframes floaty { 0% { transform: translateY(0); } 100% { transform: translateY(-8px); } }
-.hero-visual .quote-card { animation: floaty 6s ease-in-out infinite alternate; }
+.hero-visual .hero-logo { animation: floaty 6s ease-in-out infinite alternate; }
 
 @media (prefers-reduced-motion: reduce) {
   * { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition: none !important; scroll-behavior: auto !important; }
