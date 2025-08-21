@@ -261,8 +261,6 @@
     <script>
       (function () {
         var prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        var kofiBtn = document.querySelector('.kofi-button');
-        if (!kofiBtn) return;
         function confettiBurst() {
           if (prefersReduced) return;
           var canvas = document.createElement('canvas');
@@ -318,9 +316,8 @@
             h = canvas.height = window.innerHeight;
           }, { once: true });
         }
-        kofiBtn.addEventListener('click', function () {
-          confettiBurst();
-        });
+        // Trigger confetti automatically on page load
+        confettiBurst();
       })();
     </script>
   </body>
