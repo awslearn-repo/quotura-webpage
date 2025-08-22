@@ -404,7 +404,7 @@ input:focus, select:focus, textarea:focus {
 .actions { display: flex; gap: 0.75rem; align-items: center; margin-top: 0.75rem; }
 
 /* Motion & Reveal */
-.reveal { opacity: 0; transform: translateY(14px); will-change: transform, opacity; }
+.reveal { opacity: 0; transform: translateY(16px); will-change: transform, opacity; }
 .reveal.is-visible { opacity: 1; transform: none; }
 
 .button:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--ring), 0 8px 24px rgba(124, 58, 237, 0.25); }
@@ -414,6 +414,94 @@ input:focus, select:focus, textarea:focus {
 
 @keyframes floaty { 0% { transform: translateY(0); } 100% { transform: translateY(-8px); } }
 .hero-visual .hero-logo { animation: floaty 6s ease-in-out infinite alternate; }
+
+/* Blob backgrounds */
+.blob-layer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero, .cta.section.alt {
+  position: relative;
+}
+
+.blob {
+  position: absolute;
+  width: 480px;
+  height: 480px;
+  border-radius: 50%;
+  filter: blur(42px);
+  opacity: 0.35;
+  transform: translateZ(0);
+  will-change: transform, opacity;
+}
+
+/* Hero blobs */
+.blob--1 {
+  left: -120px;
+  top: -140px;
+  background: radial-gradient(closest-side, rgba(124,58,237,0.70), rgba(124,58,237,0.0));
+  animation: blobDrift1 18s ease-in-out infinite alternate;
+}
+
+.blob--2 {
+  right: -160px;
+  top: -100px;
+  background: radial-gradient(closest-side, rgba(244,63,94,0.65), rgba(244,63,94,0.0));
+  animation: blobDrift2 22s ease-in-out infinite alternate;
+}
+
+.blob--3 {
+  left: 40%;
+  bottom: -220px;
+  background: radial-gradient(closest-side, rgba(59,130,246,0.55), rgba(59,130,246,0.0));
+  animation: blobDrift3 20s ease-in-out infinite alternate;
+}
+
+/* CTA blobs */
+.blob--cta-1 {
+  left: -140px;
+  top: -160px;
+  background: radial-gradient(closest-side, rgba(124,58,237,0.65), rgba(124,58,237,0.0));
+  animation: blobDrift1 16s ease-in-out infinite alternate;
+}
+
+.blob--cta-2 {
+  right: -160px;
+  bottom: -200px;
+  background: radial-gradient(closest-side, rgba(16,185,129,0.55), rgba(16,185,129,0.0));
+  animation: blobDrift2 19s ease-in-out infinite alternate;
+}
+
+@keyframes blobDrift1 {
+  0% { transform: translate(-10px, 0) scale(1); }
+  100% { transform: translate(10px, 14px) scale(1.08); }
+}
+
+@keyframes blobDrift2 {
+  0% { transform: translate(6px, -6px) scale(1.02); }
+  100% { transform: translate(-12px, 10px) scale(1.1); }
+}
+
+@keyframes blobDrift3 {
+  0% { transform: translate(0, 0) scale(0.98); }
+  100% { transform: translate(12px, -10px) scale(1.06); }
+}
+
+/* Elevate content above blobs */
+.hero-grid, .cta .container { position: relative; z-index: 1; }
+
+/* Enhance reveal animation slightly */
+.reveal { opacity: 0; transform: translateY(16px); }
+.reveal.is-visible { transition: opacity 600ms ease, transform 600ms ease; }
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .blob { animation: none !important; }
+}
 
 @media (prefers-reduced-motion: reduce) {
   * { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition: none !important; scroll-behavior: auto !important; }
