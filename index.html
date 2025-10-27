@@ -186,95 +186,67 @@
           <h2>Simple pricing</h2>
           <p class="lead">Start free. Upgrade to Pro for advanced editing and cloud saves.</p>
 
-          <div class="pricing-table-wrapper" role="region" aria-label="Pricing comparison">
-            <table class="pricing-table" role="table">
-              <thead>
-                <tr role="row">
-                  <th scope="col">Feature</th>
-                  <th scope="col" class="plan-head">Basic (Free) <span class="pill">Free</span></th>
-                  <th scope="col" class="plan-head plan-head--pro">Pro <span class="pill pill--pro">$5/m or $40/y</span> <span class="badge">Most popular</span></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <th scope="row"><span aria-hidden="true">💬</span> Highlight-to-quote workflow</th>
-                  <td class="yes" aria-label="Included">✅</td>
-                  <td class="yes" aria-label="Included">✅</td>
-                </tr>
-                <tr>
-                  <th scope="row"><span aria-hidden="true">🖼️</span> Quote image preview</th>
-                  <td class="yes" aria-label="Included">✅</td>
-                  <td class="yes" aria-label="Included">✅</td>
-                </tr>
-                <tr>
-                  <th scope="row"><span aria-hidden="true">🎨</span> Random & preset gradient backgrounds</th>
-                  <td class="yes" aria-label="Included">✅</td>
-                  <td class="yes" aria-label="Included">✅</td>
-                </tr>
-                <tr>
-                  <th scope="row"><span aria-hidden="true">✍️</span> Inline text editing on image</th>
-                  <td class="no" aria-label="Not included">❌</td>
-                  <td class="yes" aria-label="Included">✅</td>
-                </tr>
-                <tr>
-                  <th scope="row"><span aria-hidden="true">🔤</span> Font family & size customization</th>
-                  <td class="no" aria-label="Not included">❌</td>
-                  <td class="yes" aria-label="Included">✅</td>
-                </tr>
-                <tr>
-                  <th scope="row"><span aria-hidden="true">🖌️</span> Text color, bold, italic, underline</th>
-                  <td class="no" aria-label="Not included">❌</td>
-                  <td class="yes" aria-label="Included">✅</td>
-                </tr>
-                <tr>
-                  <th scope="row"><span aria-hidden="true">🧭</span> Text alignment controls (left, center, right)</th>
-                  <td class="no" aria-label="Not included">❌</td>
-                  <td class="yes" aria-label="Included">✅</td>
-                </tr>
-                <tr>
-                  <th scope="row"><span aria-hidden="true">🌈</span> Background color picker & transparency</th>
-                  <td class="no" aria-label="Not included">❌</td>
-                  <td class="yes" aria-label="Included">✅</td>
-                </tr>
-                <tr>
-                  <th scope="row"><span aria-hidden="true">🧩</span> Decorative pattern backgrounds</th>
-                  <td class="no" aria-label="Not included">❌</td>
-                  <td class="yes" aria-label="Included">✅</td>
-                </tr>
-                <tr>
-                  <th scope="row"><span aria-hidden="true">🧾</span> Watermark (“Made with Quotura”)</th>
-                  <td>Always visible</td>
-                  <td>Removable</td>
-                </tr>
-                <tr>
-                  <th scope="row"><span aria-hidden="true">💾</span> Download as PNG, SVG, copy to clipboard</th>
-                  <td class="yes" aria-label="Included">✅</td>
-                  <td class="yes" aria-label="Included">✅</td>
-                </tr>
-                <tr>
-                  <th scope="row"><span aria-hidden="true">☁️</span> Save generated quotes to cloud</th>
-                  <td class="no" aria-label="Not included">❌</td>
-                  <td class="yes" aria-label="Included">✅</td>
-                </tr>
-                <tr class="emphasis">
-                  <th scope="row"><span aria-hidden="true">🔁</span> <strong>Unlimited usage</strong></th>
-                  <td class="yes" aria-label="Included"><strong>✅</strong></td>
-                  <td class="yes" aria-label="Included"><strong>✅</strong></td>
-                </tr>
-                <tr>
-                  <th scope="row"><span aria-hidden="true">🔐</span> Access with login</th>
-                  <td>Optional</td>
-                  <td>Required</td>
-                </tr>
-                <tr>
-                  <th scope="row"><span aria-hidden="true">🚀</span> Price</th>
-                  <td><strong>Free forever</strong></td>
-                  <td><strong>$5/month</strong> <span class="muted">or $40/year</span></td>
-                </tr>
-              </tbody>
-            </table>
+          <div class="plans" role="list" aria-label="Pricing plans">
+            <article class="plan" role="listitem" aria-labelledby="plan-free">
+              <div class="plan__header">
+                <h3 id="plan-free">Free</h3>
+                <span class="pill">Free forever</span>
+              </div>
+              <div class="plan__price">
+                <span class="plan__amount">$0</span>
+                <span class="plan__period">forever</span>
+              </div>
+              <ul class="plan__features" role="list">
+                <li class="is-included">Highlight‑to‑quote workflow</li>
+                <li class="is-included">Quote image preview</li>
+                <li class="is-included">Random & preset gradient backgrounds</li>
+                <li class="is-included">Download PNG/SVG or copy to clipboard</li>
+                <li class="is-note">Watermark always visible</li>
+              </ul>
+              <a
+                class="button button--ghost button--lg"
+                href="https://chromewebstore.google.com/detail/mlkcccmkkcdhalkjnlabofccobpdjbio?utm_source=website_pricing_free"
+                rel="noopener"
+                target="_blank"
+                >Start free</a
+              >
+            </article>
+
+            <article class="plan plan--pro" role="listitem" aria-labelledby="plan-pro">
+              <div class="plan__header">
+                <div class="plan__header-left">
+                  <h3 id="plan-pro">Pro</h3>
+                  <span class="pill pill--pro">$5/m or $40/y</span>
+                </div>
+                <span class="badge">Most popular</span>
+              </div>
+              <div class="plan__price">
+                <span class="plan__amount">$5</span>
+                <span class="plan__period">per month</span>
+              </div>
+              <ul class="plan__features" role="list">
+                <li class="is-included"><strong>Everything in Free</strong></li>
+                <li class="is-included">Inline text editing on image</li>
+                <li class="is-included">Font family & size customization</li>
+                <li class="is-included">Text color, bold, italic, underline</li>
+                <li class="is-included">Text alignment controls</li>
+                <li class="is-included">Background color picker & transparency</li>
+                <li class="is-included">Decorative pattern backgrounds</li>
+                <li class="is-included">Watermark removable</li>
+                <li class="is-included">Save generated quotes to cloud</li>
+                <li class="is-included"><strong>Unlimited usage</strong></li>
+              </ul>
+              <a
+                class="button button--primary button--lg"
+                href="https://chromewebstore.google.com/detail/mlkcccmkkcdhalkjnlabofccobpdjbio?utm_source=website_pricing_pro"
+                rel="noopener"
+                target="_blank"
+                >Go Pro</a
+              >
+            </article>
           </div>
-          <p class="pricing-note">Pro includes everything in Basic plus advanced editing controls and cloud saving.</p>
+
+          <p class="pricing-note">Pro includes everything in Free plus advanced editing controls and cloud saving.</p>
         </div>
       </section>
 
