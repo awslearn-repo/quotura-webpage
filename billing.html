@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Quotura Billing Portal</title>
+    <meta
+      name="description"
+      content="Quotura is preparing a secure Stripe Billing Portal session. This page should be opened by the Quotura Chrome extension."
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="site-header" role="banner">
+      <div class="site-header__inner">
+        <a class="brand" href="/" aria-label="Quotura home">
+          <span class="brand__mark" aria-hidden="true">❝</span>
+          <span>Quotura</span>
+        </a>
+        <span class="brand__tagline">Opening billing portal</span>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="page" aria-labelledby="page-title">
+        <article class="page__card">
+          <header class="page__header">
+            <h1 id="page-title" class="page__title">Redirecting you to manage your subscription</h1>
+            <p class="page__lead">Hang tight while we create a secure Stripe Billing Portal session for your account.</p>
+          </header>
+
+          <div class="callout" role="note">
+            <strong>What happens next</strong>
+            The Stripe portal lets you update payment methods, download invoices, or cancel your plan. When you’re finished, close that tab and reopen the Quotura extension.
+          </div>
+
+          <div id="status-block" class="status status--loading" role="status" aria-live="assertive">
+            <span id="status-label" class="status__label">Preparing portal</span>
+            <p id="status-message" class="status__message">Contacting Stripe to create a secure portal session.</p>
+            <div id="status-spinner" class="spinner-inline">
+              <span class="spinner" aria-hidden="true"></span>
+              <span>Working on it…</span>
+            </div>
+            <p id="status-detail" class="status__detail hidden"></p>
+            <div class="status__actions">
+              <button id="retry-button" class="button button--primary hidden" type="button">Try again</button>
+              <a
+                id="extension-deeplink"
+                class="button button--secondary"
+                href="chrome-extension://mlkcccmkkcdhalkjnlabofccobpdjbio/main.html"
+                target="_blank"
+                rel="noopener"
+              >Reopen Quotura extension</a>
+              <a class="link-inline" href="mailto:support@imaginetechverse.com">Contact support</a>
+            </div>
+          </div>
+
+          <p class="support-note">
+            If you opened this page manually, it won’t work without the secure token from the Quotura extension. Reopen the extension to continue.
+          </p>
+        </article>
+      </section>
+    </main>
+
+    <footer class="site-footer" role="contentinfo">
+      <div class="site-footer__inner">
+        <span>Need help? Email <a href="mailto:support@imaginetechverse.com">support@imaginetechverse.com</a></span>
+      </div>
+    </footer>
+
+    <script>
+      (function () {
+        var API_ENDPOINT = "https://quotura.imaginetechverse.com/api/billing/create-portal-session";
+        var EXTENSION_LINK = "chrome-extension://mlkcccmkkcdhalkjnlabofccobpdjbio/main.html";
+
+        var params = new URLSearchParams(window.location.search);
+        var token = params.get("token") || params.get("jwt") || params.get("auth") || "";
+        if (!token && typeof window !== "undefined") {
+          if (typeof window.__QUOTURA_JWT__ === "string") token = window.__QUOTURA_JWT__;
+          else if (typeof window.__QUOTURA_TOKEN__ === "string") token = window.__QUOTURA_TOKEN__;
+          else if (typeof window.QUOTURA_AUTH_TOKEN === "string") token = window.QUOTURA_AUTH_TOKEN;
+        }
+        try {
+          if (!token && window.sessionStorage) {
+            var stored = window.sessionStorage.getItem("quoturaAuthToken");
+            if (stored) token = stored;
+          }
+        } catch (storageError) {
+          /* ignore storage access issues */
+        }
+
+        var statusBlock = document.getElementById("status-block");
+        var statusLabel = document.getElementById("status-label");
+        var statusMessage = document.getElementById("status-message");
+        var statusDetail = document.getElementById("status-detail");
+        var spinner = document.getElementById("status-spinner");
+        var retryButton = document.getElementById("retry-button");
+        var extensionLink = document.getElementById("extension-deeplink");
+
+        extensionLink.href = EXTENSION_LINK;
+
+        function setStatus(type, message, detail) {
+          statusBlock.classList.remove("status--loading", "status--error", "status--success");
+          statusBlock.classList.add("status--" + type);
+          statusLabel.textContent = type === "error" ? "Something went wrong" : type === "success" ? "Redirecting" : "Preparing portal";
+          statusMessage.textContent = message;
+
+          if (detail) {
+            statusDetail.textContent = detail;
+            statusDetail.classList.remove("hidden");
+          } else {
+            statusDetail.textContent = "";
+            statusDetail.classList.add("hidden");
+          }
+
+          if (type === "loading") {
+            spinner.classList.remove("hidden");
+            retryButton.classList.add("hidden");
+          } else {
+            spinner.classList.add("hidden");
+          }
+
+          if (type === "error") {
+            retryButton.classList.remove("hidden");
+            retryButton.disabled = false;
+          }
+        }
+
+        function missingTokenError() {
+          setStatus(
+            "error",
+            "We couldn’t verify your Quotura account.",
+            "The Quotura extension must open this page so it can include a secure sign-in token. Reopen the extension and try again."
+          );
+        }
+
+        async function startPortalRedirect() {
+          if (!token) {
+            missingTokenError();
+            return;
+          }
+
+          setStatus("loading", "Creating your secure Stripe Billing Portal session.");
+
+          try {
+            retryButton.disabled = true;
+            var response = await fetch(API_ENDPOINT, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + token,
+              },
+              body: JSON.stringify({}),
+            });
+
+            var data = await response.json().catch(function () {
+              return {};
+            });
+
+            if (!response.ok || !data.url) {
+              var detail = data && data.error ? data.error : "Unexpected response from the server.";
+              setStatus(
+                "error",
+                "Stripe portal session could not be created.",
+                detail + " You can retry or contact support."
+              );
+              return;
+            }
+
+            setStatus("success", "Redirecting you to Stripe now.");
+            window.location.replace(data.url);
+          } catch (error) {
+            setStatus(
+              "error",
+              "We hit a network issue while contacting Stripe.",
+              (error && error.message) || "Check your connection and try again."
+            );
+          }
+        }
+
+        retryButton.addEventListener("click", function () {
+          retryButton.disabled = true;
+          startPortalRedirect();
+        });
+
+        startPortalRedirect();
+      })();
+    </script>
+  </body>
+</html>

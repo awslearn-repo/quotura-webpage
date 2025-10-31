@@ -1,12 +1,12 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Quotura — Select text. Share as a beautiful quote.</title>
+    <title>Quotura Billing Support</title>
     <meta
       name="description"
-      content="Select any text in Chrome and turn it into a shareable quote with beautiful backgrounds. Make basic edits (font, size), then download PNG/SVG or copy to clipboard. Share to LinkedIn, Facebook, WhatsApp, and Telegram — free to use."
+      content="Quotura billing flows start inside the Quotura Chrome extension. This site only assists the extension with Stripe checkout and billing portal redirects."
     />
     <link
       rel="icon"
@@ -17,389 +17,74 @@
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
 
-    <header class="site-header">
-      <div class="container header-inner">
-        <a href="#top" class="brand" aria-label="Quotura home">
-          <span class="brand-mark" aria-hidden="true">❝</span>
-          <span class="brand-name">Quotura</span>
+    <header class="site-header" role="banner">
+      <div class="site-header__inner">
+        <a class="brand" href="/" aria-label="Quotura home">
+          <span class="brand__mark" aria-hidden="true">❝</span>
+          <span>Quotura</span>
         </a>
-        <input
-          id="nav-toggle"
-          class="nav-toggle"
-          type="checkbox"
-          aria-label="Toggle navigation"
-        />
-        <label for="nav-toggle" class="hamburger" aria-hidden="true">
-          <span></span>
-          <span></span>
-          <span></span>
-        </label>
-        <nav class="site-nav">
-          <a href="#features">Features</a>
-          <a href="#pricing">Pricing</a>
-          <a href="#how">How it works</a>
-          <a href="#support">Support</a>
-          <a
-            class="button button--primary button--sm"
-            href="https://chromewebstore.google.com/detail/mlkcccmkkcdhalkjnlabofccobpdjbio?utm_source=website_nav"
-            rel="noopener"
-            target="_blank"
-            >Add to Chrome</a
-          >
-        </nav>
+        <span class="brand__tagline">Billing support pages</span>
       </div>
     </header>
 
     <main id="main">
-      <section class="hero reveal">
-        <div class="blob-layer" aria-hidden="true">
-          <div class="blob blob--1"></div>
-          <div class="blob blob--2"></div>
-          <div class="blob blob--3"></div>
-        </div>
-        <div class="container hero-grid">
-          <div class="hero-copy">
-            <h1>Turn your words into beautiful quote images in seconds</h1>
-            <p class="lead">
-              Tired of wasting time formatting quotes for socials?<br />
-              Meet Quotura – a super-fast, no-frills text-to-quote tool that instantly turns your words into beautiful visuals.
+      <section class="page" aria-labelledby="page-title">
+        <article class="page__card">
+          <header class="page__header">
+            <h1 id="page-title" class="page__title">Manage Quotura billing inside the extension</h1>
+            <p class="page__lead">
+              This website only powers Stripe checkout, billing portal, and confirmation pages when the Quotura Chrome extension needs them.
             </p>
-            <div class="cta-row">
-              <a
-                class="button button--primary button--lg"
-                href="https://chromewebstore.google.com/detail/mlkcccmkkcdhalkjnlabofccobpdjbio?utm_source=website_hero"
-                rel="noopener"
-                target="_blank"
-                >Add to Chrome — it’s free</a
-              >
-              <a class="button button--ghost button--lg" href="#how"
-                >See how it works</a
-              >
-            </div>
-            <ul class="trust-list" role="list">
-              <li>Free to use</li>
-              <li>PNG • SVG • Copy to clipboard</li>
-              <li>Share to LinkedIn, Facebook, WhatsApp, Telegram</li>
-            </ul>
-          </div>
-          <div class="hero-visual" aria-hidden="true">
-            <img
-              class="hero-logo"
-              src="assets/quotura-logo.png"
-              alt="Quotura logo"
-            />
-          </div>
-        </div>
-      </section>
+          </header>
 
-      <section class="bar">
-        <div class="container bar-inner">
-          <span class="badge">Built for</span>
-          <ul class="segmented" role="list">
-            <li>Students</li>
-            <li>Professionals</li>
-            <li>Anyone sharing quotes</li>
+          <ul class="notice-list">
+            <li>The Quotura Chrome extension is the only entry point for upgrades and billing management.</li>
+            <li>When you finish a Stripe flow, return to the extension to see your updated subscription.</li>
+            <li>If you landed here directly, please reopen the extension to continue.</li>
           </ul>
-        </div>
-      </section>
 
-      <section id="features" class="section reveal">
-        <div class="container">
-          <h2>Everything you need to share great quotes</h2>
-          <div class="features-grid">
-            <article class="feature">
-              <div class="feature__icon" aria-hidden="true">🖱️</div>
-              <h3>Select any text</h3>
-              <p>Select text on blogs, books, or the web in Chrome.</p>
-            </article>
-            <article class="feature">
-              <div class="feature__icon" aria-hidden="true">🎨</div>
-              <h3>Beautiful backgrounds</h3>
-              <p>Pick modern backgrounds that make your quotes pop.</p>
-            </article>
-            <article class="feature">
-              <div class="feature__icon" aria-hidden="true">🅰️</div>
-              <h3>Text edits</h3>
-              <p>Change font, text size, bold, italic, underline text. Even change text.</p>
-            </article>
-            <article class="feature">
-              <div class="feature__icon" aria-hidden="true">📥</div>
-              <h3>Download or copy</h3>
-              <p>Save PNG or SVG, or copy the quote image to your clipboard.</p>
-            </article>
-            <article class="feature">
-              <div class="feature__icon" aria-hidden="true">🔗</div>
-              <h3>Easy sharing (coming soon)</h3>
-              <p>Share on LinkedIn, Facebook, WhatsApp, and Telegram.</p>
-            </article>
+          <div class="callout" role="note">
+            <strong>Need to upgrade or manage billing?</strong>
+            Open the Quotura extension from your browser toolbar. It will launch the correct billing page with your secure sign-in automatically.
           </div>
-        </div>
-      </section>
 
-      <section id="how" class="section alt reveal">
-        <div class="container">
-          <h2>How it works</h2>
-          <ol class="steps" role="list">
-            <li class="step">
-              <span class="step__num">1</span>
-              <div class="step__body">
-                <h3>Install Quotura</h3>
-                <p>Add the extension from the Chrome Web Store.</p>
-              </div>
-            </li>
-            <li class="step">
-              <span class="step__num">2</span>
-              <div class="step__body">
-                <h3>Select any text</h3>
-                <p>Highlight a passage on any webpage in Chrome.</p>
-              </div>
-            </li>
-            <li class="step">
-              <span class="step__num">3</span>
-              <div class="step__body">
-                <h3>Customize</h3>
-                <p>Pick a background and adjust font and text size.</p>
-              </div>
-            </li>
-            <li class="step">
-              <span class="step__num">4</span>
-              <div class="step__body">
-                <h3>Download or share</h3>
-                <p>Export PNG/SVG, copy to clipboard, or share to social apps.</p>
-              </div>
-            </li>
-          </ol>
-          <div class="center">
+          <div class="actions">
             <a
               class="button button--primary"
-              href="https://chromewebstore.google.com/detail/mlkcccmkkcdhalkjnlabofccobpdjbio?utm_source=website_how"
-              rel="noopener"
+              href="https://chromewebstore.google.com/detail/mlkcccmkkcdhalkjnlabofccobpdjbio"
               target="_blank"
-              >Add to Chrome</a
-            >
-          </div>
-        </div>
-      </section>
-
-      <section id="pricing" class="section reveal">
-        <div class="container">
-          <h2>Simple pricing</h2>
-          <p class="lead">Start free. Upgrade to Pro for advanced editing and cloud saves.</p>
-
-          <div class="plans" role="list" aria-label="Pricing plans">
-            <article class="plan" role="listitem" aria-labelledby="plan-free">
-              <div class="plan__header">
-                <h3 id="plan-free">Free</h3>
-                <span class="pill">Free forever</span>
-              </div>
-              <div class="plan__price">
-                <span class="plan__amount">$0</span>
-                <span class="plan__period">forever</span>
-              </div>
-              <ul class="plan__features" role="list">
-                <li class="is-included">Highlight‑to‑quote workflow</li>
-                <li class="is-included">Quote image preview</li>
-                <li class="is-included">Random & preset gradient backgrounds</li>
-                <li class="is-included">Download PNG/SVG or copy to clipboard</li>
-                <li class="is-included">Unlimited usage</li>
-                <li class="is-note">Watermark always visible</li>
-              </ul>
-              <a
-                class="button button--ghost button--lg"
-                href="https://chromewebstore.google.com/detail/mlkcccmkkcdhalkjnlabofccobpdjbio?utm_source=website_pricing_free"
-                rel="noopener"
-                target="_blank"
-                >Start free</a
-              >
-            </article>
-
-            <article class="plan plan--pro" role="listitem" aria-labelledby="plan-pro">
-              <div class="plan__header">
-                <div class="plan__header-left">
-                  <h3 id="plan-pro">Pro</h3>
-                  <span class="pill pill--pro">$5/m or $40/y</span>
-                </div>
-                <span class="badge">Most popular</span>
-              </div>
-              <div class="plan__price">
-                <span class="plan__amount">$5</span>
-                <span class="plan__period">per month</span>
-              </div>
-              <ul class="plan__features" role="list">
-                <li class="is-included"><strong>Everything in Free</strong></li>
-                <li class="is-included">Inline text editing on image</li>
-                <li class="is-included">Font family & size customization</li>
-                <li class="is-included">Text color, bold, italic, underline</li>
-                <li class="is-included">Text alignment controls</li>
-                <li class="is-included">Background color picker & transparency</li>
-                <li class="is-included">Decorative pattern backgrounds</li>
-                <li class="is-included">Watermark removable</li>
-                <li class="is-included">Save generated quotes to cloud</li>
-                <li class="is-included"><strong>Unlimited usage</strong></li>
-              </ul>
-              <a
-                class="button button--primary button--lg"
-                href="https://chromewebstore.google.com/detail/mlkcccmkkcdhalkjnlabofccobpdjbio?utm_source=website_pricing_pro"
-                rel="noopener"
-                target="_blank"
-                >Go Pro</a
-              >
-            </article>
+              rel="noopener"
+            >Install Quotura extension</a>
+            <a
+              class="button button--secondary"
+              href="chrome-extension://mlkcccmkkcdhalkjnlabofccobpdjbio/main.html"
+              target="_blank"
+              rel="noopener"
+            >Open the extension</a>
           </div>
 
-          <p class="pricing-note">Pro includes everything in Free plus advanced editing controls and cloud saving (coming soon).</p>
-        </div>
-      </section>
-
-      
-      
-      <section class="cta section alt reveal">
-        <div class="blob-layer" aria-hidden="true">
-          <div class="blob blob--cta-1"></div>
-          <div class="blob blob--cta-2"></div>
-        </div>
-        <div class="container center">
-          <h2>Create beautiful quotes from any text you select</h2>
-          <p class="lead">Start free. No account required.</p>
-          <a
-            class="button button--primary button--lg"
-            href="https://chromewebstore.google.com/detail/mlkcccmkkcdhalkjnlabofccobpdjbio?utm_source=website_cta"
-            rel="noopener"
-            target="_blank"
-            >Add to Chrome</a
-          >
-        </div>
-      </section>
-      
-      <section id="support" class="section reveal">
-        <div class="container center">
-          <h2>Support Quotura</h2>
-          <p class="lead">Quotura is free. If it helps you, you can support development with a tip.</p>
-          <a
-            class="button button--ghost kofi-button"
-            href="https://ko-fi.com/s/b5f0dccba5"
-            rel="noopener"
-            target="_blank"
-            >Support on Ko‑fi</a
-          >
-        </div>
+          <p class="support-note">
+            <strong>Need help?</strong>
+            Email
+            <a href="mailto:support@imaginetechverse.com">support@imaginetechverse.com</a>
+            and we'll get back to you.
+          </p>
+        </article>
       </section>
     </main>
 
-    <footer class="site-footer">
-      <div class="container footer-inner">
-        <div class="footer-left">
-          <span class="brand-mark" aria-hidden="true">❝</span>
-          <span class="brand-name">Quotura</span>
-          <span class="dot">•</span>
-          <span class="muted">Make quotes worth sharing.</span>
-        </div>
-        <div class="footer-right">
-          <a href="#" aria-disabled="true">Privacy</a>
-          <a href="#" aria-disabled="true">Terms</a>
-          <a
-            href="https://chromewebstore.google.com/detail/mlkcccmkkcdhalkjnlabofccobpdjbio?utm_source=website_footer"
-            rel="noopener"
-            target="_blank"
-            >Add to Chrome</a
-          >
-        </div>
+    <footer class="site-footer" role="contentinfo">
+      <div class="site-footer__inner">
+        <span>Quotura • Select text. Share better quotes.</span>
+        <span>
+          Chrome extension deep link:
+          <code class="extension-link">chrome-extension://mlkcccmkkcdhalkjnlabofccobpdjbio/main.html</code>
+        </span>
+        <span>
+          Support:
+          <a href="mailto:support@imaginetechverse.com">support@imaginetechverse.com</a>
+        </span>
       </div>
-      <a
-        class="install-bar"
-        href="https://chromewebstore.google.com/detail/mlkcccmkkcdhalkjnlabofccobpdjbio?utm_source=website_mobile_bar"
-        rel="noopener"
-        target="_blank"
-        aria-label="Add Quotura to Chrome"
-      >
-        Add to Chrome — free
-      </a>
     </footer>
-    <script>
-      (function () {
-        if ("IntersectionObserver" in window) {
-          var io = new IntersectionObserver(
-            function (entries) {
-              entries.forEach(function (entry) {
-                if (entry.isIntersecting) {
-                  entry.target.classList.add("is-visible");
-                  io.unobserve(entry.target);
-                }
-              });
-            },
-            { rootMargin: "0px 0px -10% 0px", threshold: 0.1 }
-          );
-          document.querySelectorAll(".reveal").forEach(function (el) {
-            io.observe(el);
-          });
-        } else {
-          document.querySelectorAll(".reveal").forEach(function (el) {
-            el.classList.add("is-visible");
-          });
-        }
-      })();
-    </script>
-    <script>
-      (function () {
-        var prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        function confettiBurst() {
-          if (prefersReduced) return;
-          var canvas = document.createElement('canvas');
-          canvas.setAttribute('aria-hidden', 'true');
-          canvas.style.position = 'fixed';
-          canvas.style.inset = '0';
-          canvas.style.pointerEvents = 'none';
-          canvas.style.zIndex = '9999';
-          var ctx = canvas.getContext('2d');
-          var w = canvas.width = window.innerWidth;
-          var h = canvas.height = window.innerHeight;
-          var colors = ['#7c3aed', '#f43f5e', '#10b981', '#f59e0b', '#3b82f6'];
-          var pieces = [];
-          var pieceCount = Math.min(120, Math.floor(w * h / 25000));
-          for (var i = 0; i < pieceCount; i++) {
-            pieces.push({
-              x: Math.random() * w,
-              y: -20 - Math.random() * 60,
-              r: 4 + Math.random() * 6,
-              c: colors[Math.floor(Math.random() * colors.length)],
-              vx: -2 + Math.random() * 4,
-              vy: 3 + Math.random() * 3,
-              rot: Math.random() * Math.PI,
-              vr: (-0.2 + Math.random() * 0.4)
-            });
-          }
-          document.body.appendChild(canvas);
-          var start = performance.now();
-          function tick(now) {
-            var elapsed = now - start;
-            ctx.clearRect(0, 0, w, h);
-            pieces.forEach(function (p) {
-              p.x += p.vx;
-              p.y += p.vy;
-              p.vy += 0.03;
-              p.rot += p.vr;
-              ctx.save();
-              ctx.translate(p.x, p.y);
-              ctx.rotate(p.rot);
-              ctx.fillStyle = p.c;
-              ctx.fillRect(-p.r * 0.5, -p.r * 0.5, p.r, p.r * 1.5);
-              ctx.restore();
-            });
-            if (elapsed < 1200) {
-              requestAnimationFrame(tick);
-            } else {
-              canvas.remove();
-            }
-          }
-          requestAnimationFrame(tick);
-          window.addEventListener('resize', function () {
-            w = canvas.width = window.innerWidth;
-            h = canvas.height = window.innerHeight;
-          }, { once: true });
-        }
-        // Trigger confetti automatically on page load
-        confettiBurst();
-      })();
-    </script>
   </body>
 </html>
