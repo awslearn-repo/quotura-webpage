@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Quotura Pro Upgrade</title>
+    <meta
+      name="description"
+      content="Quotura prepares a secure Stripe Checkout session for your selected plan. This page must be opened from the Quotura Chrome extension."
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="site-header" role="banner">
+      <div class="site-header__inner">
+        <a class="brand" href="/" aria-label="Quotura home">
+          <span class="brand__mark" aria-hidden="true">❝</span>
+          <span>Quotura</span>
+        </a>
+        <span class="brand__tagline">Preparing Stripe checkout</span>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="page" aria-labelledby="page-title">
+        <article class="page__card">
+          <header class="page__header">
+            <h1 id="page-title" class="page__title">Redirecting you to Stripe Checkout</h1>
+            <p class="page__lead">Stay on this page for a moment while we secure your subscription upgrade.</p>
+          </header>
+
+          <div class="plan-summary" aria-live="polite">
+            <span class="plan-summary__label">Selected plan</span>
+            <p id="plan-name" class="plan-summary__name">Quotura Pro — Monthly</p>
+            <p id="plan-note" class="plan-summary__note">$5 billed every month. Cancel anytime in the Quotura billing portal.</p>
+          </div>
+
+          <div id="status-block" class="status status--loading" role="status" aria-live="assertive">
+            <span id="status-label" class="status__label">Preparing checkout</span>
+            <p id="status-message" class="status__message">Creating a secure Stripe session with your Quotura account.</p>
+            <div id="status-spinner" class="spinner-inline">
+              <span class="spinner" aria-hidden="true"></span>
+              <span>Working on it…</span>
+            </div>
+            <p id="status-detail" class="status__detail hidden"></p>
+            <div class="status__actions">
+              <button id="retry-button" class="button button--primary hidden" type="button">Try again</button>
+              <a
+                id="extension-deeplink"
+                class="button button--secondary"
+                href="chrome-extension://mlkcccmkkcdhalkjnlabofccobpdjbio/main.html"
+                target="_blank"
+                rel="noopener"
+              >Reopen Quotura extension</a>
+              <a class="link-inline" href="mailto:support@imaginetechverse.com">Contact support</a>
+            </div>
+          </div>
+
+          <p class="support-note">
+            Once Stripe confirms payment, this tab will show a success message. Close it and reopen the Quotura extension to access your Pro features right away.
+          </p>
+        </article>
+      </section>
+    </main>
+
+    <footer class="site-footer" role="contentinfo">
+      <div class="site-footer__inner">
+        <span>Need a hand? Email <a href="mailto:support@imaginetechverse.com">support@imaginetechverse.com</a></span>
+      </div>
+    </footer>
+
+    <script>
+      (function () {
+        var API_ENDPOINT = "https://quotura.imaginetechverse.com/api/create-checkout-session";
+        var EXTENSION_LINK = "chrome-extension://mlkcccmkkcdhalkjnlabofccobpdjbio/main.html";
+        var planCopy = {
+          monthly: {
+            name: "Quotura Pro — Monthly",
+            note: "$5 billed every month. Cancel anytime in the Quotura billing portal.",
+          },
+          yearly: {
+            name: "Quotura Pro — Yearly",
+            note: "$40 billed once per year. Two months free compared to monthly billing.",
+          },
+        };
+
+        var params = new URLSearchParams(window.location.search);
+        var rawPlan = (params.get("plan") || "monthly").toLowerCase();
+        var planKey = planCopy[rawPlan] ? rawPlan : "monthly";
+        var token = params.get("token") || params.get("jwt") || params.get("auth") || "";
+        if (!token && typeof window !== "undefined") {
+          if (typeof window.__QUOTURA_JWT__ === "string") token = window.__QUOTURA_JWT__;
+          else if (typeof window.__QUOTURA_TOKEN__ === "string") token = window.__QUOTURA_TOKEN__;
+          else if (typeof window.QUOTURA_AUTH_TOKEN === "string") token = window.QUOTURA_AUTH_TOKEN;
+        }
+        try {
+          if (!token && window.sessionStorage) {
+            var stored = window.sessionStorage.getItem("quoturaAuthToken");
+            if (stored) token = stored;
+          }
+        } catch (storageError) {
+          /* ignore storage access issues */
+        }
+
+        var planNameEl = document.getElementById("plan-name");
+        var planNoteEl = document.getElementById("plan-note");
+        var statusBlock = document.getElementById("status-block");
+        var statusLabel = document.getElementById("status-label");
+        var statusMessage = document.getElementById("status-message");
+        var statusDetail = document.getElementById("status-detail");
+        var spinner = document.getElementById("status-spinner");
+        var retryButton = document.getElementById("retry-button");
+        var extensionLink = document.getElementById("extension-deeplink");
+
+        extensionLink.href = EXTENSION_LINK;
+        planNameEl.textContent = planCopy[planKey].name;
+        planNoteEl.textContent = planCopy[planKey].note;
+
+        function setStatus(type, message, detail) {
+          statusBlock.classList.remove("status--loading", "status--error", "status--success");
+          statusBlock.classList.add("status--" + type);
+          statusLabel.textContent = type === "error" ? "Something went wrong" : type === "success" ? "Redirecting" : "Preparing checkout";
+          statusMessage.textContent = message;
+
+          if (detail) {
+            statusDetail.textContent = detail;
+            statusDetail.classList.remove("hidden");
+          } else {
+            statusDetail.textContent = "";
+            statusDetail.classList.add("hidden");
+          }
+
+          if (type === "loading") {
+            spinner.classList.remove("hidden");
+            retryButton.classList.add("hidden");
+          } else {
+            spinner.classList.add("hidden");
+          }
+
+          if (type === "error") {
+            retryButton.classList.remove("hidden");
+            retryButton.disabled = false;
+          }
+        }
+
+        function missingTokenError() {
+          setStatus(
+            "error",
+            "We couldn’t verify your Quotura account.",
+            "This page must be opened from inside the Quotura extension so it can include a secure sign-in token. Reopen the extension and try again."
+          );
+        }
+
+        async function startCheckout() {
+          if (!token) {
+            missingTokenError();
+            return;
+          }
+
+          setStatus("loading", "Creating a secure Stripe session with your Quotura account.");
+
+          try {
+            retryButton.disabled = true;
+            var response = await fetch(API_ENDPOINT, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + token,
+              },
+              body: JSON.stringify({ plan: planKey }),
+            });
+
+            var data = await response.json().catch(function () {
+              return {};
+            });
+
+            if (!response.ok || !data.url) {
+              var detail = data && data.error ? data.error : "Unexpected response from the server.";
+              setStatus(
+                "error",
+                "Stripe checkout session could not be created.",
+                detail + " Use the buttons below to retry or contact support."
+              );
+              return;
+            }
+
+            setStatus("success", "Redirecting you to Stripe now.");
+            window.location.replace(data.url);
+          } catch (error) {
+            setStatus(
+              "error",
+              "We hit a network issue while contacting Stripe.",
+              (error && error.message) || "Check your connection and try again."
+            );
+          }
+        }
+
+        retryButton.addEventListener("click", function () {
+          retryButton.disabled = true;
+          startCheckout();
+        });
+
+        startCheckout();
+      })();
+    </script>
+  </body>
+</html>
