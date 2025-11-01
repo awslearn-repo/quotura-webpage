@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Choose Your Quotura Pro Plan</title>
+    <meta
+      name="description"
+      content="Select the Quotura Pro plan that works best for you. This page should be launched from the Quotura Chrome extension."
+    />
+    <link rel="stylesheet" href="stripe.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="site-header" role="banner">
+      <div class="site-header__inner">
+        <a class="brand" href="/" aria-label="Quotura home">
+          <span class="brand__mark" aria-hidden="true">❝</span>
+          <span>Quotura</span>
+        </a>
+        <span class="brand__tagline">Pick your Pro plan</span>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="page" aria-labelledby="page-title">
+        <article class="page__card">
+          <header class="page__header">
+            <h1 id="page-title" class="page__title">Choose your Quotura Pro plan</h1>
+            <p class="page__lead">Decide how you want to be billed, then we’ll take you to a secure Stripe checkout.</p>
+          </header>
+
+          <div id="token-warning" class="status status--error hidden" role="alert" aria-live="assertive">
+            <span class="status__label">Action needed</span>
+            <p class="status__message">We couldn’t verify your Quotura account.</p>
+            <p class="status__detail">This page must be opened from inside the Quotura extension so it can include a secure sign-in token. Reopen the extension and try again.</p>
+          </div>
+
+          <div class="plan-grid" role="list">
+            <section class="plan-card" role="listitem" aria-labelledby="plan-monthly-title">
+              <header class="plan-card__header">
+                <h2 id="plan-monthly-title" class="plan-card__title">Pro Monthly</h2>
+              </header>
+              <p class="plan-card__price">
+                <span class="plan-card__amount">$5</span>
+                <span class="plan-card__period">per month</span>
+              </p>
+              <p class="plan-card__description">Flexible billing that you can cancel anytime through the Stripe portal.</p>
+              <ul class="plan-card__features">
+                <li>Unlimited saved quotes and highlights</li>
+                <li>Priority sync across Chrome profiles</li>
+                <li>Email support within 24 hours</li>
+              </ul>
+              <button class="button button--secondary plan-card__cta" data-plan="monthly" type="button">Continue with Monthly</button>
+            </section>
+
+            <section class="plan-card plan-card--recommended" role="listitem" aria-labelledby="plan-yearly-title">
+              <header class="plan-card__header">
+                <h2 id="plan-yearly-title" class="plan-card__title">Pro Yearly</h2>
+                <span class="plan-card__badge">Best value</span>
+              </header>
+              <p class="plan-card__price">
+                <span class="plan-card__amount">$40</span>
+                <span class="plan-card__period">per year</span>
+              </p>
+              <p class="plan-card__description">Save two months compared to paying monthly and lock in the current rate.</p>
+              <ul class="plan-card__features">
+                <li>Everything in Pro Monthly</li>
+                <li>Priority roadmap feedback sessions</li>
+                <li>Annual receipt straight to your inbox</li>
+              </ul>
+              <button class="button button--primary plan-card__cta" data-plan="yearly" type="button">Continue with Yearly</button>
+            </section>
+          </div>
+
+          <p class="support-note">
+            Need help picking a plan? Email <a href="mailto:support@imaginetechverse.com">support@imaginetechverse.com</a> and we’ll help you out.
+          </p>
+        </article>
+      </section>
+    </main>
+
+    <footer class="site-footer" role="contentinfo">
+      <div class="site-footer__inner">
+        <span>Quotura Pro unlocks more ways to work with your favorite quotes.</span>
+      </div>
+    </footer>
+
+    <script>
+      (function () {
+        var planButtons = Array.prototype.slice.call(document.querySelectorAll('[data-plan]'));
+        var tokenWarning = document.getElementById('token-warning');
+        var params = new URLSearchParams(window.location.search);
+        var token = params.get('token') || params.get('jwt') || params.get('auth') || '';
+
+        if (!token && typeof window !== 'undefined') {
+          if (typeof window.__QUOTURA_JWT__ === 'string') token = window.__QUOTURA_JWT__;
+          else if (typeof window.__QUOTURA_TOKEN__ === 'string') token = window.__QUOTURA_TOKEN__;
+          else if (typeof window.QUOTURA_AUTH_TOKEN === 'string') token = window.QUOTURA_AUTH_TOKEN;
+        }
+
+        try {
+          if (!token && window.sessionStorage) {
+            var stored = window.sessionStorage.getItem('quoturaAuthToken');
+            if (stored) token = stored;
+          }
+        } catch (storageError) {
+          /* ignore storage access issues */
+        }
+
+        function handleMissingToken() {
+          tokenWarning.classList.remove('hidden');
+          planButtons.forEach(function (button) {
+            button.disabled = true;
+            button.textContent = 'Open the extension to continue';
+          });
+        }
+
+        function redirectToPlan(plan, button) {
+          if (!token) {
+            handleMissingToken();
+            return;
+          }
+
+          var originalLabel = button.textContent;
+          button.disabled = true;
+          button.textContent = 'Preparing checkout…';
+
+          try {
+            var nextUrl = new URL('upgrade.html', window.location.origin);
+            nextUrl.searchParams.set('plan', plan);
+            nextUrl.searchParams.set('token', token);
+            window.location.assign(nextUrl.toString());
+          } catch (error) {
+            button.disabled = false;
+            button.textContent = originalLabel;
+            console.error('Failed to redirect to checkout', error);
+          }
+        }
+
+        planButtons.forEach(function (button) {
+          button.addEventListener('click', function () {
+            redirectToPlan(button.getAttribute('data-plan'), button);
+          });
+        });
+
+        if (!token) {
+          handleMissingToken();
+        }
+      })();
+    </script>
+  </body>
+</html>
