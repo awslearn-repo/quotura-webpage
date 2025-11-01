@@ -112,17 +112,12 @@
         function handleMissingToken() {
           tokenWarning.classList.remove('hidden');
           planButtons.forEach(function (button) {
-            button.disabled = true;
-            button.textContent = 'Open the extension to continue';
+            button.disabled = false;
+            button.textContent = 'Choose & Upgrade';
           });
         }
 
         function redirectToPlan(plan, button) {
-          if (!token) {
-            handleMissingToken();
-            return;
-          }
-
           var originalLabel = button.textContent;
           button.disabled = true;
           button.textContent = 'Preparing checkout…';
@@ -130,7 +125,7 @@
           try {
             var nextUrl = new URL('upgrade.html', window.location.origin);
             nextUrl.searchParams.set('plan', plan);
-            nextUrl.searchParams.set('token', token);
+            if (token) nextUrl.searchParams.set('token', token);
             window.location.assign(nextUrl.toString());
           } catch (error) {
             button.disabled = false;
