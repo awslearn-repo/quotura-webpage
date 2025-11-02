@@ -102,6 +102,7 @@
         var userSummary = document.getElementById('user-summary');
         var userGreeting = document.getElementById('user-greeting');
         var userPlan = document.getElementById('user-plan');
+        var RESOLVE_SESSION_ENDPOINT = 'https://quotura.imaginetechverse.com/api/resolve-session';
         var params = new URLSearchParams(window.location.search);
         var sessionId = params.get('session') || '';
         var token = '';
@@ -224,9 +225,14 @@
           setStatus('loading', 'Verifying session', 'Checking your Quotura account…');
 
           try {
-            var response = await fetch('/resolve-session?session=' + encodeURIComponent(sessionId), {
+            var requestUrl = RESOLVE_SESSION_ENDPOINT + '?session=' + encodeURIComponent(sessionId);
+            var headers = { Accept: 'application/json' };
+
+            if (token) headers.Authorization = 'Bearer ' + token;
+
+            var response = await fetch(requestUrl, {
               method: 'GET',
-              headers: { Accept: 'application/json' },
+              headers: headers,
               cache: 'no-store',
               credentials: 'include',
             });
@@ -318,22 +324,23 @@
         }
 
         function init() {
+          discoverToken();
+
           if (sessionId) {
             resolveSession();
-          } else {
-            discoverToken();
-
-            if (!token) {
-              handleMissingSession();
-              return;
-            }
-
-            hideStatus();
-            setPlanButtonsState(true);
-            planButtons.forEach(function (button) {
-              button.textContent = 'Choose & Upgrade';
-            });
+            return;
           }
+
+          if (!token) {
+            handleMissingSession();
+            return;
+          }
+
+          hideStatus();
+          setPlanButtonsState(true);
+          planButtons.forEach(function (button) {
+            button.textContent = 'Choose & Upgrade';
+          });
         }
 
         planButtons.forEach(function (button) {
