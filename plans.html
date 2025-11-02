@@ -31,10 +31,15 @@
             <p class="page__lead">Decide how you want to be billed, then we’ll take you to a secure Stripe checkout.</p>
           </header>
 
-          <div id="token-warning" class="status status--error hidden" role="alert" aria-live="assertive">
-            <span class="status__label">Action needed</span>
-            <p class="status__message">We couldn’t verify your Quotura account.</p>
-            <p class="status__detail">This page must be opened from inside the Quotura extension so it can include a secure sign-in token. Reopen the extension and try again.</p>
+          <div id="session-status" class="status hidden" role="alert" aria-live="assertive">
+            <span id="session-status-label" class="status__label"></span>
+            <p id="session-status-message" class="status__message"></p>
+            <p id="session-status-detail" class="status__detail hidden"></p>
+          </div>
+
+          <div id="user-summary" class="callout hidden" role="status" aria-live="polite">
+            <strong id="user-greeting"></strong>
+            <p id="user-plan" class="hidden"></p>
           </div>
 
           <div class="plan-grid" role="list">
@@ -90,47 +95,244 @@
     <script>
       (function () {
         var planButtons = Array.prototype.slice.call(document.querySelectorAll('[data-plan]'));
-        var tokenWarning = document.getElementById('token-warning');
+        var sessionStatus = document.getElementById('session-status');
+        var sessionStatusLabel = document.getElementById('session-status-label');
+        var sessionStatusMessage = document.getElementById('session-status-message');
+        var sessionStatusDetail = document.getElementById('session-status-detail');
+        var userSummary = document.getElementById('user-summary');
+        var userGreeting = document.getElementById('user-greeting');
+        var userPlan = document.getElementById('user-plan');
         var params = new URLSearchParams(window.location.search);
-        var token = params.get('token') || params.get('jwt') || params.get('auth') || '';
+        var sessionId = params.get('session') || '';
+        var token = '';
 
-        if (!token && typeof window !== 'undefined') {
-          if (typeof window.__QUOTURA_JWT__ === 'string') token = window.__QUOTURA_JWT__;
-          else if (typeof window.__QUOTURA_TOKEN__ === 'string') token = window.__QUOTURA_TOKEN__;
-          else if (typeof window.QUOTURA_AUTH_TOKEN === 'string') token = window.QUOTURA_AUTH_TOKEN;
-        }
+        planButtons.forEach(function (button) {
+          button.dataset.originalLabel = button.textContent;
+        });
 
-        try {
-          if (!token && window.sessionStorage) {
-            var stored = window.sessionStorage.getItem('quoturaAuthToken');
-            if (stored) token = stored;
-          }
-        } catch (storageError) {
-          /* ignore storage access issues */
-        }
-
-        function handleMissingToken() {
-          tokenWarning.classList.remove('hidden');
+        function setPlanButtonsState(enabled, label) {
           planButtons.forEach(function (button) {
-            button.disabled = false;
-            button.textContent = 'Choose & Upgrade';
+            button.disabled = !enabled;
+            if (enabled) button.removeAttribute('aria-disabled');
+            else button.setAttribute('aria-disabled', 'true');
+
+            if (label) button.textContent = label;
+            else if (enabled) button.textContent = 'Choose & Upgrade';
+            else if (button.dataset.originalLabel) button.textContent = button.dataset.originalLabel;
           });
         }
 
+        function setStatus(type, label, message, detail) {
+          sessionStatus.classList.remove('hidden', 'status--error', 'status--loading', 'status--success');
+          sessionStatus.classList.add('status--' + type);
+          sessionStatusLabel.textContent = label;
+          sessionStatusMessage.textContent = message;
+
+          if (detail) {
+            sessionStatusDetail.textContent = detail;
+            sessionStatusDetail.classList.remove('hidden');
+          } else {
+            sessionStatusDetail.textContent = '';
+            sessionStatusDetail.classList.add('hidden');
+          }
+        }
+
+        function hideStatus() {
+          sessionStatus.classList.add('hidden');
+          sessionStatus.classList.remove('status--error', 'status--loading', 'status--success');
+          sessionStatusLabel.textContent = '';
+          sessionStatusMessage.textContent = '';
+          sessionStatusDetail.textContent = '';
+          sessionStatusDetail.classList.add('hidden');
+        }
+
+        function formatTier(tier) {
+          if (!tier) return '';
+          var normalized = tier.toLowerCase();
+          if (normalized.includes('month')) return 'Quotura Pro — Monthly';
+          if (normalized.includes('year')) return 'Quotura Pro — Yearly';
+          if (normalized.includes('free')) return 'Quotura Free';
+          return tier;
+        }
+
+        function updateButtonsForTier(tier) {
+          planButtons.forEach(function (button) {
+            var card = button.closest('.plan-card');
+            if (card) {
+              card.removeAttribute('data-current-plan');
+            }
+
+            button.disabled = false;
+            button.removeAttribute('aria-disabled');
+            button.textContent = 'Choose & Upgrade';
+          });
+
+          if (!tier) return;
+
+          var normalized = tier.toLowerCase();
+          var targetPlan = '';
+          if (normalized.includes('month')) targetPlan = 'monthly';
+          else if (normalized.includes('year')) targetPlan = 'yearly';
+
+          if (!targetPlan) return;
+
+          var currentButton = planButtons.find(function (button) {
+            return button.getAttribute('data-plan') === targetPlan;
+          });
+
+          if (currentButton) {
+            currentButton.disabled = true;
+            currentButton.setAttribute('aria-disabled', 'true');
+            currentButton.textContent = 'Current plan';
+            var currentCard = currentButton.closest('.plan-card');
+            if (currentCard) currentCard.setAttribute('data-current-plan', 'true');
+          }
+        }
+
+        function showUserSummary(email, tier) {
+          if (!email && !tier) {
+            userSummary.classList.add('hidden');
+            return;
+          }
+
+          userGreeting.textContent = email ? 'Signed in as ' + email : 'Signed in';
+
+          var tierText = formatTier(tier);
+          if (tierText) {
+            userPlan.textContent = 'Current plan: ' + tierText;
+            userPlan.classList.remove('hidden');
+          } else {
+            userPlan.textContent = '';
+            userPlan.classList.add('hidden');
+          }
+
+          userSummary.classList.remove('hidden');
+        }
+
+        function handleMissingSession() {
+          setStatus(
+            'error',
+            'Action needed',
+            'We couldn’t verify your Quotura account.',
+            'Open the Quotura extension and launch this page again to start the upgrade.'
+          );
+          setPlanButtonsState(false, 'Reopen extension');
+        }
+
+        async function resolveSession() {
+          setPlanButtonsState(false, 'Verifying…');
+          setStatus('loading', 'Verifying session', 'Checking your Quotura account…');
+
+          try {
+            var response = await fetch('/resolve-session?session=' + encodeURIComponent(sessionId), {
+              method: 'GET',
+              headers: { Accept: 'application/json' },
+              cache: 'no-store',
+              credentials: 'include',
+            });
+
+            if (response.status === 401) {
+              setStatus(
+                'error',
+                'Session expired',
+                'Your secure session has expired.',
+                'Return to the Quotura extension to reopen the billing page with a fresh session.'
+              );
+              setPlanButtonsState(false, 'Session expired');
+              return;
+            }
+
+            if (!response.ok) {
+              setStatus(
+                'error',
+                'Unable to confirm account',
+                'We hit a problem verifying your session.',
+                'Reopen the Quotura extension and try again.'
+              );
+              setPlanButtonsState(false, 'Unavailable');
+              return;
+            }
+
+            var data = await response.json().catch(function () {
+              return {};
+            });
+
+            hideStatus();
+            setPlanButtonsState(true);
+            planButtons.forEach(function (button) {
+              button.textContent = 'Choose & Upgrade';
+            });
+
+            showUserSummary(data.email || '', data.tier || '');
+            updateButtonsForTier(data.tier || '');
+          } catch (error) {
+            setStatus(
+              'error',
+              'Network issue',
+              'We could not reach the Quotura servers.',
+              'Check your connection or reopen the extension to refresh the session.'
+            );
+            setPlanButtonsState(false, 'Retry from extension');
+          }
+        }
+
+        function discoverToken() {
+          token = params.get('token') || params.get('jwt') || params.get('auth') || '';
+
+          if (!token && typeof window !== 'undefined') {
+            if (typeof window.__QUOTURA_JWT__ === 'string') token = window.__QUOTURA_JWT__;
+            else if (typeof window.__QUOTURA_TOKEN__ === 'string') token = window.__QUOTURA_TOKEN__;
+            else if (typeof window.QUOTURA_AUTH_TOKEN === 'string') token = window.QUOTURA_AUTH_TOKEN;
+          }
+
+          if (!token) {
+            try {
+              if (window.sessionStorage) {
+                var stored = window.sessionStorage.getItem('quoturaAuthToken');
+                if (stored) token = stored;
+              }
+            } catch (storageError) {
+              /* ignore storage access issues */
+            }
+          }
+        }
+
         function redirectToPlan(plan, button) {
-          var originalLabel = button.textContent;
+          var originalLabel = button.dataset.originalLabel || button.textContent;
           button.disabled = true;
+          button.setAttribute('aria-disabled', 'true');
           button.textContent = 'Preparing checkout…';
 
           try {
             var nextUrl = new URL('upgrade.html', window.location.origin);
             nextUrl.searchParams.set('plan', plan);
-            if (token) nextUrl.searchParams.set('token', token);
+            if (sessionId) nextUrl.searchParams.set('session', sessionId);
+            else if (token) nextUrl.searchParams.set('token', token);
             window.location.assign(nextUrl.toString());
           } catch (error) {
             button.disabled = false;
+            button.removeAttribute('aria-disabled');
             button.textContent = originalLabel;
             console.error('Failed to redirect to checkout', error);
+          }
+        }
+
+        function init() {
+          if (sessionId) {
+            resolveSession();
+          } else {
+            discoverToken();
+
+            if (!token) {
+              handleMissingSession();
+              return;
+            }
+
+            hideStatus();
+            setPlanButtonsState(true);
+            planButtons.forEach(function (button) {
+              button.textContent = 'Choose & Upgrade';
+            });
           }
         }
 
@@ -140,9 +342,7 @@
           });
         });
 
-        if (!token) {
-          handleMissingToken();
-        }
+        init();
       })();
     </script>
   </body>

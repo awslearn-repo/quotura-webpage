@@ -89,6 +89,7 @@
         var params = new URLSearchParams(window.location.search);
         var rawPlan = (params.get("plan") || "monthly").toLowerCase();
         var planKey = planCopy[rawPlan] ? rawPlan : "monthly";
+        var sessionId = params.get("session") || "";
         var token = params.get("token") || params.get("jwt") || params.get("auth") || "";
         if (!token && typeof window !== "undefined") {
           if (typeof window.__QUOTURA_JWT__ === "string") token = window.__QUOTURA_JWT__;
@@ -149,12 +150,14 @@
           setStatus(
             "error",
             "We couldn’t verify your Quotura account.",
-            "This page must be opened from inside the Quotura extension so it can include a secure sign-in token. Reopen the extension and try again."
+            sessionId
+              ? "Your secure session expired. Reopen the Quotura extension to start the upgrade again."
+              : "This page must be opened from inside the Quotura extension so it can include a secure sign-in token. Reopen the extension and try again."
           );
         }
 
         async function startCheckout() {
-          if (!token) {
+          if (!sessionId && !token) {
             missingTokenError();
             return;
           }
@@ -163,18 +166,36 @@
 
           try {
             retryButton.disabled = true;
-            var response = await fetch(API_ENDPOINT, {
+            var requestUrl = API_ENDPOINT + (sessionId ? "?session=" + encodeURIComponent(sessionId) : "");
+            var headers = {
+              "Content-Type": "application/json",
+            };
+            if (!sessionId && token) {
+              headers.Authorization = "Bearer " + token;
+            }
+
+            var response = await fetch(requestUrl, {
               method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: "Bearer " + token,
-              },
+              headers: headers,
+              credentials: "include",
               body: JSON.stringify({ plan: planKey }),
             });
 
             var data = await response.json().catch(function () {
               return {};
             });
+
+            if (response.status === 401) {
+              setStatus(
+                "error",
+                "Session expired",
+                "Your secure session is no longer valid.",
+                "Return to the Quotura extension to reopen this upgrade flow."
+              );
+              retryButton.classList.add("hidden");
+              retryButton.disabled = true;
+              return;
+            }
 
             if (!response.ok || !data.url) {
               var detail = data && data.error ? data.error : "Unexpected response from the server.";
