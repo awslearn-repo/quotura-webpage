@@ -47,13 +47,6 @@
             <p id="status-detail" class="status__detail hidden"></p>
             <div class="status__actions">
               <button id="retry-button" class="button button--primary hidden" type="button">Try again</button>
-              <a
-                id="extension-deeplink"
-                class="button button--secondary"
-                href="chrome-extension://mlkcccmkkcdhalkjnlabofccobpdjbio/main.html"
-                target="_blank"
-                rel="noopener"
-              >Reopen Quotura extension</a>
               <a class="link-inline" href="mailto:support@imaginetechverse.com">Contact support</a>
             </div>
           </div>
@@ -74,7 +67,6 @@
     <script>
       (function () {
         var API_ENDPOINT = "https://quotura.imaginetechverse.com/api/create-checkout-session";
-        var EXTENSION_LINK = "chrome-extension://mlkcccmkkcdhalkjnlabofccobpdjbio/main.html";
         var planCopy = {
           monthly: {
             name: "Quotura Pro — Monthly",
@@ -113,9 +105,7 @@
         var statusDetail = document.getElementById("status-detail");
         var spinner = document.getElementById("status-spinner");
         var retryButton = document.getElementById("retry-button");
-        var extensionLink = document.getElementById("extension-deeplink");
 
-        extensionLink.href = EXTENSION_LINK;
         planNameEl.textContent = planCopy[planKey].name;
         planNoteEl.textContent = planCopy[planKey].note;
 
