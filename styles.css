@@ -299,14 +299,36 @@ p {
 }
 
 .hero-visual {
-  display: grid;
-  place-items: center;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
 }
 
-.hero-logo {
+.hero-slideshow {
+  position: relative;
+  display: grid;
   width: min(70vw, 420px);
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 12px 36px rgba(15, 23, 42, 0.18);
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.12), rgba(244, 63, 94, 0.12));
+  isolation: isolate;
+}
+
+.hero-slide {
+  grid-area: 1 / 1;
+  width: 100%;
   height: auto;
-  filter: drop-shadow(0 10px 30px rgba(15, 23, 42, 0.15));
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 600ms ease;
+  pointer-events: none;
+}
+
+.hero-slide.is-active,
+.hero-slideshow:not(.is-initialized) .hero-slide:first-child {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .quote-card {
@@ -1028,6 +1050,15 @@ textarea:focus {
 @media (max-width: 1024px) {
   .hero-grid {
     grid-template-columns: 1fr;
+  }
+
+  .hero-visual {
+    justify-content: center;
+    margin-top: 2rem;
+  }
+
+  .hero-slideshow {
+    width: min(85vw, 420px);
   }
 }
 
