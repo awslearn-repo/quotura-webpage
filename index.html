@@ -84,26 +84,24 @@
           </div>
           <div class="hero-visual" aria-hidden="true">
             <div class="hero-slideshow" data-interval="5000">
-              <div class="hero-slides">
-                <img
-                  class="hero-slide is-active"
-                  src="https://quotura.imaginetechverse.com/assets/image1.png"
-                  alt=""
-                  loading="lazy"
-                />
-                <img
-                  class="hero-slide"
-                  src="https://quotura.imaginetechverse.com/assets/image2.png"
-                  alt=""
-                  loading="lazy"
-                />
-                <img
-                  class="hero-slide"
-                  src="https://quotura.imaginetechverse.com/assets/image3.png"
-                  alt=""
-                  loading="lazy"
-                />
-              </div>
+              <img
+                class="hero-slide is-active"
+                src="https://quotura.imaginetechverse.com/assets/image1.png"
+                alt=""
+                loading="lazy"
+              />
+              <img
+                class="hero-slide"
+                src="https://quotura.imaginetechverse.com/assets/image2.png"
+                alt=""
+                loading="lazy"
+              />
+              <img
+                class="hero-slide"
+                src="https://quotura.imaginetechverse.com/assets/image3.png"
+                alt=""
+                loading="lazy"
+              />
             </div>
           </div>
         </div>
@@ -353,150 +351,87 @@
             });
           }
         })();
-        </script>
-        <script>
-          (function () {
-            var slideshow = document.querySelector(".hero-slideshow");
-            if (!slideshow) return;
+      </script>
+      <script>
+        (function () {
+          var slideshow = document.querySelector(".hero-slideshow");
+          if (!slideshow) return;
 
-            var track = slideshow.querySelector(".hero-slides");
-            if (!track) return;
+          var slides = Array.prototype.slice.call(
+            slideshow.querySelectorAll(".hero-slide")
+          );
+          if (slides.length <= 1) {
+            slideshow.classList.add("is-initialized");
+            return;
+          }
 
-            var slides = Array.prototype.slice.call(
-              track.querySelectorAll(".hero-slide")
-            );
-            if (!slides.length) {
+          var dataInterval = parseInt(slideshow.getAttribute("data-interval"), 10);
+          var defaultInterval = 5000;
+          var interval =
+            Number.isFinite(dataInterval) && dataInterval > 0
+              ? dataInterval
+              : defaultInterval;
+          var mediaQuery =
+            window.matchMedia &&
+            window.matchMedia("(prefers-reduced-motion: reduce)");
+          var prefersReduced = mediaQuery && mediaQuery.matches;
+          var current = 0;
+          var timerId = null;
+
+          slides.forEach(function (slide, index) {
+            slide.classList.toggle("is-active", index === 0);
+          });
+          slideshow.classList.add("is-initialized");
+
+          function setActive(index) {
+            slides[current].classList.remove("is-active");
+            slides[index].classList.add("is-active");
+            current = index;
+          }
+
+          function next() {
+            setActive((current + 1) % slides.length);
+          }
+
+          function stop() {
+            if (timerId !== null) {
+              window.clearInterval(timerId);
+              timerId = null;
+            }
+          }
+
+          function start() {
+            if (prefersReduced) {
+              stop();
               return;
             }
+            stop();
+            timerId = window.setInterval(next, interval);
+          }
 
-            var dataInterval = parseInt(slideshow.getAttribute("data-interval"), 10);
-            var defaultInterval = 5000;
-            var interval =
-              Number.isFinite(dataInterval) && dataInterval > 0
-                ? dataInterval
-                : defaultInterval;
-            var mediaQuery =
-              window.matchMedia &&
-              window.matchMedia("(prefers-reduced-motion: reduce)");
-            var prefersReduced = mediaQuery && mediaQuery.matches;
-            var timerId = null;
-            var current = 0;
-            var isTransitioning = false;
-
-            function refreshSlides() {
-              slides = Array.prototype.slice.call(track.querySelectorAll(".hero-slide"));
-            }
-
-            function cloneFirstSlide() {
-              if (slideshow.dataset.cloned === "true" || slides.length <= 1) {
-                refreshSlides();
-                return;
-              }
-              var clone = slides[0].cloneNode(true);
-              clone.setAttribute("data-clone", "true");
-              track.appendChild(clone);
-              slideshow.dataset.cloned = "true";
-              refreshSlides();
-            }
-
-            if (!prefersReduced) {
-              cloneFirstSlide();
-            }
-
-            function updateActive(index) {
-              var targetIndex = index;
-              if (slides[index] && slides[index].getAttribute("data-clone") === "true") {
-                targetIndex = 0;
-              }
-              slides.forEach(function (slide, idx) {
-                slide.classList.toggle("is-active", idx === targetIndex);
-              });
-            }
-
-            function setTransform(index, options) {
-              if (options && options.skipTransition) {
-                track.style.transition = "none";
-              }
-              track.style.transform = "translateX(" + index * -100 + "%)";
-              updateActive(index);
-              if (options && options.skipTransition) {
-                requestAnimationFrame(function () {
-                  track.style.transition = "";
-                });
-                isTransitioning = false;
-              }
-            }
-
-            function moveTo(index) {
-              isTransitioning = true;
-              current = index;
-              setTransform(current);
-            }
-
-            function next() {
-              if (prefersReduced || isTransitioning) return;
-              moveTo(current + 1);
-            }
-
-            function stop() {
-              if (timerId !== null) {
-                window.clearInterval(timerId);
-                timerId = null;
-              }
-            }
-
-            function start() {
-              if (prefersReduced || slides.length <= 1) {
-                stop();
-                return;
-              }
+          function handlePreferenceChange(event) {
+            prefersReduced = event.matches;
+            if (prefersReduced) {
               stop();
-              timerId = window.setInterval(next, interval);
+            } else {
+              start();
             }
+          }
 
-            function handleTransitionEnd(event) {
-              if (event.propertyName !== "transform") return;
-              if (
-                !prefersReduced &&
-                slides[current] &&
-                slides[current].getAttribute("data-clone") === "true"
-              ) {
-                current = 0;
-                setTransform(current, { skipTransition: true });
-              } else {
-                isTransitioning = false;
-              }
-            }
+          slideshow.addEventListener("mouseenter", stop);
+          slideshow.addEventListener("mouseleave", start);
+          slideshow.addEventListener("focusin", stop);
+          slideshow.addEventListener("focusout", start);
 
-            function handlePreferenceChange(event) {
-              prefersReduced = event.matches;
-              if (prefersReduced) {
-                stop();
-                current = 0;
-                setTransform(current, { skipTransition: true });
-              } else {
-                cloneFirstSlide();
-                start();
-              }
-            }
+          if (mediaQuery && typeof mediaQuery.addEventListener === "function") {
+            mediaQuery.addEventListener("change", handlePreferenceChange);
+          } else if (mediaQuery && typeof mediaQuery.addListener === "function") {
+            mediaQuery.addListener(handlePreferenceChange);
+          }
 
-            slideshow.addEventListener("mouseenter", stop);
-            slideshow.addEventListener("mouseleave", start);
-            slideshow.addEventListener("focusin", stop);
-            slideshow.addEventListener("focusout", start);
-            track.addEventListener("transitionend", handleTransitionEnd);
-
-            if (mediaQuery && typeof mediaQuery.addEventListener === "function") {
-              mediaQuery.addEventListener("change", handlePreferenceChange);
-            } else if (mediaQuery && typeof mediaQuery.addListener === "function") {
-              mediaQuery.addListener(handlePreferenceChange);
-            }
-
-            setTransform(current, { skipTransition: true });
-            slideshow.classList.add("is-initialized");
-            start();
-          })();
-        </script>
+          start();
+        })();
+      </script>
       <script>
         (function () {
           var prefersReduced =
