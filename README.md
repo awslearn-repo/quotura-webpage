@@ -12,7 +12,7 @@ This repository serves the minimal public pages that the Quotura Chrome extensio
 | `/success` | Landing page after a successful Stripe checkout. Instructs the user to reopen the extension. |
 | `/cancel` | Landing page when a Stripe flow is cancelled. Recommends relaunching the extension to try again. |
 
-Each page prominently links back to the extension and to `support@imaginetechverse.com`.
+Each page prominently links back to the extension and to `myquest.ai@gmail.com`.
 
 ## Chrome Extension Deep Link
 
@@ -99,5 +99,5 @@ If any of these ever change, let the backend team know so they can update the en
 
 ## Support
 
-If anything looks off in production, email `support@imaginetechverse.com` or contact the Quotura extension team.
+If anything looks off in production, email `myquest.ai@gmail.com` or contact the Quotura extension team.
 
