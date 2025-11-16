@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -12,43 +12,72 @@
       rel="icon"
       href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%237c3aed'/%3E%3Ctext x='50%' y='54%' text-anchor='middle' font-family='Arial, Helvetica, sans-serif' font-size='38' fill='white'%3E%26ldquo;%3C/text%3E%3C/svg%3E"
     />
+      <script>
+        (function () {
+          var root = document.documentElement;
+          var storageKey = "quotura-theme";
+          try {
+            var storedTheme = localStorage.getItem(storageKey);
+            var isStoredValid = storedTheme === "light" || storedTheme === "dark";
+            var prefersDark =
+              window.matchMedia &&
+              window.matchMedia("(prefers-color-scheme: dark)").matches;
+            var theme = isStoredValid ? storedTheme : prefersDark ? "dark" : "light";
+            root.setAttribute("data-theme", theme);
+          } catch (error) {
+            root.setAttribute("data-theme", "light");
+          }
+        })();
+      </script>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
 
-    <header class="site-header">
-      <div class="container header-inner">
-        <a href="#top" class="brand" aria-label="Quotura home">
-          <span class="brand-mark" aria-hidden="true">❝</span>
-          <span class="brand-name">Quotura</span>
-        </a>
-        <input
-          id="nav-toggle"
-          class="nav-toggle"
-          type="checkbox"
-          aria-label="Toggle navigation"
-        />
-        <label for="nav-toggle" class="hamburger" aria-hidden="true">
-          <span></span>
-          <span></span>
-          <span></span>
-        </label>
-        <nav class="site-nav">
-          <a href="#features">Features</a>
-          <a href="#pricing">Pricing</a>
-          <a href="#how">How it works</a>
-          <a href="#support">Support</a>
-          <a
-            class="button button--primary button--sm"
-            href="https://chromewebstore.google.com/detail/mlkcccmkkcdhalkjnlabofccobpdjbio?utm_source=website_nav"
-            rel="noopener"
-            target="_blank"
-            >Add to Chrome</a
-          >
-        </nav>
-      </div>
-    </header>
+      <header class="site-header">
+        <div class="container header-inner">
+          <a href="#top" class="brand" aria-label="Quotura home">
+            <span class="brand-mark" aria-hidden="true">❝</span>
+            <span class="brand-name">Quotura</span>
+          </a>
+          <div class="header-controls">
+            <button
+              id="theme-toggle"
+              class="theme-toggle"
+              type="button"
+              aria-pressed="false"
+              aria-label="Switch to dark theme"
+            >
+              <span class="theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true">☀︎</span>
+              <span class="theme-toggle__icon theme-toggle__icon--moon" aria-hidden="true">☾</span>
+            </button>
+            <input
+              id="nav-toggle"
+              class="nav-toggle"
+              type="checkbox"
+              aria-label="Toggle navigation"
+            />
+            <label for="nav-toggle" class="hamburger" aria-hidden="true">
+              <span></span>
+              <span></span>
+              <span></span>
+            </label>
+            <nav class="site-nav">
+              <a href="#features">Features</a>
+              <a href="#pricing">Pricing</a>
+              <a href="#how">How it works</a>
+              <a href="#support">Support</a>
+              <a
+                class="button button--primary button--sm"
+                href="https://chromewebstore.google.com/detail/mlkcccmkkcdhalkjnlabofccobpdjbio?utm_source=website_nav"
+                rel="noopener"
+                target="_blank"
+                >Add to Chrome</a
+              >
+            </nav>
+          </div>
+        </div>
+      </header>
 
     <main id="main">
       <section class="hero reveal">
@@ -317,6 +346,69 @@
         Add to Chrome — free
       </a>
     </footer>
+      <script>
+        (function () {
+          var storageKey = "quotura-theme";
+          var root = document.documentElement;
+          var toggle = document.getElementById("theme-toggle");
+          if (!toggle || !root) {
+            return;
+          }
+
+          function resolveTheme(value) {
+            return value === "dark" ? "dark" : "light";
+          }
+
+          function setTheme(theme, shouldPersist) {
+            var next = resolveTheme(theme);
+            root.setAttribute("data-theme", next);
+            if (shouldPersist) {
+              try {
+                localStorage.setItem(storageKey, next);
+              } catch (error) {
+                /* ignore write errors */
+              }
+            }
+            toggle.setAttribute("aria-pressed", next === "dark" ? "true" : "false");
+            toggle.setAttribute(
+              "aria-label",
+              next === "dark" ? "Switch to light theme" : "Switch to dark theme"
+            );
+          }
+
+          toggle.addEventListener("click", function () {
+            var current = resolveTheme(root.getAttribute("data-theme"));
+            var next = current === "dark" ? "light" : "dark";
+            setTheme(next, true);
+          });
+
+          var mediaQuery =
+            window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)");
+
+          if (mediaQuery) {
+            var handleChange = function (event) {
+              var storedPreference = null;
+              try {
+                storedPreference = localStorage.getItem(storageKey);
+              } catch (error) {
+                storedPreference = null;
+              }
+              if (storedPreference === "light" || storedPreference === "dark") {
+                return;
+              }
+              setTheme(event.matches ? "dark" : "light", false);
+            };
+
+            if (typeof mediaQuery.addEventListener === "function") {
+              mediaQuery.addEventListener("change", handleChange);
+            } else if (typeof mediaQuery.addListener === "function") {
+              mediaQuery.addListener(handleChange);
+            }
+          }
+
+          setTheme(resolveTheme(root.getAttribute("data-theme")), false);
+        })();
+      </script>
       <script>
         (function () {
           if ("IntersectionObserver" in window) {
